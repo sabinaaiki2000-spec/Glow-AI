@@ -1,0 +1,7 @@
+{
+  "name": "Glow AI - Beauty Transformation Engine",
+  "description": "Your personal AI beauty consultant providing image analysis, visualization, and personalized transformation plans.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
