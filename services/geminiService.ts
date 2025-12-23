@@ -1,3 +1,4 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_INSTRUCTION } from '../constants';
 import { UserTier } from '../types';
@@ -19,22 +20,13 @@ export const analyzeImage = async (base64Image: string, tier: UserTier): Promise
   const ai = getClient();
   
   // Adjust the prompt based on tier
-  // Free: Basic 7-day plan
-  // Premium: Full 30-day plan with extras
-  const promptModifier = tier === UserTier.PREMIUM 
-    ? "full_report" 
-    : "generate_basic_report_7_day_only"; 
-
-  // We append a specific instruction for free users to override the default 30-day instruction in the system prompt if necessary,
-  // or we rely on the system instruction flexibility. 
-  // To be safe, we explicitly ask for the specific format.
   const userPrompt = tier === UserTier.PREMIUM
     ? "full_report"
     : "full_report. IMPORTANT: Since this is a FREE tier user, provide a SHORT condensed 7-day plan instead of 30 days. Keep analysis basic.";
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-flash-preview',
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
       },
@@ -64,10 +56,8 @@ export const generateEnhancedImage = async (originalBase64: string, prompt: stri
   const ai = getClient();
   
   try {
-    // We use the image model to edit/generate based on the prompt
-    // For best results with Glow AI, we'll ask it to visualize the description
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash-image', // or 'gemini-3-pro-image-preview' for higher quality
+      model: 'gemini-2.5-flash-image',
       contents: {
         parts: [
            {
@@ -107,7 +97,6 @@ Aim for a stunning, magazine-quality glow-up.`
       }
     });
 
-    // Check for image parts
     const parts = response.candidates?.[0]?.content?.parts;
     if (parts) {
       for (const part of parts) {
